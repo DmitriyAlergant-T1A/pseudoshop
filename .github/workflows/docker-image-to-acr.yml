@@ -57,3 +57,7 @@ jobs:
         containerAppName: ${{ env.AZ_CONTAINER_APP_NAME }}
         resourceGroup: ${{ env.AZ_RESOURCE_GROUP }}
         imageToDeploy: ${{ env.AZ_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ env.AZ_IMAGE_NAME }}:${{ env.AZ_IMAGE_VERSION_TAG }}
+
+    - name: Restart Container App Revision
+      run: |
+        az containerapp revision restart --name ${{ env.AZ_CONTAINER_APP_NAME }} --resource-group ${{ env.AZ_RESOURCE_GROUP }}
