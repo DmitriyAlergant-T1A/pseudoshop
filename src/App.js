@@ -34,7 +34,7 @@ function App() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex justify-center items-center" id="my-modal">
-          <div className="relative w-3/4 h-5/6 bg-white rounded-lg shadow-lg flex flex-col">
+          <div className="relative w-11/12 h-5/6 bg-white rounded-lg shadow-lg flex flex-col">
             <div className="flex justify-end p-2">
               <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition ease-in-out duration-150">
                 <span className="text-3xl">&times;</span>
