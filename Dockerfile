@@ -1,6 +1,10 @@
 # Stage 1: Build the React application
 FROM node:21-slim AS build
 WORKDIR /app
+
+ARG REACT_APP_PSEUDOBANK_URL
+ENV REACT_APP_PSEUDOBANK_URL=$REACT_APP_PSEUDOBANK_URL
+
 COPY package*.json ./
 RUN npm ci
 COPY . ./
