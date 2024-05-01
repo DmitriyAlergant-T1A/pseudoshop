@@ -50,14 +50,27 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy to Azure Container App
-      uses: azure/container-apps-deploy-action@v0
-      with:
-        acrName: ${{ env.AZ_CONTAINER_REGISTRY_NAME }}
-        containerAppName: ${{ env.AZ_CONTAINER_APP_NAME }}
-        resourceGroup: ${{ env.AZ_RESOURCE_GROUP }}
-        imageToDeploy: ${{ env.AZ_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ env.AZ_IMAGE_NAME }}:${{ env.AZ_IMAGE_VERSION_TAG }}
+    # - name: Deploy to Azure Container App
+    #   uses: azure/container-apps-deploy-action@v0
+    #   with:
+    #     acrName: ${{ env.AZ_CONTAINER_REGISTRY_NAME }}
+    #     containerAppName: ${{ env.AZ_CONTAINER_APP_NAME }}
+    #     resourceGroup: ${{ env.AZ_RESOURCE_GROUP }}
+    #     imageToDeploy: ${{ env.AZ_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ env.AZ_IMAGE_NAME }}:${{ env.AZ_IMAGE_VERSION_TAG }}
 
-    - name: Restart Container App Revision
+    - name: Restart a Container App Revision
       run: |
-        az containerapp revision restart --name ${{ env.AZ_CONTAINER_APP_NAME }} --resource-group ${{ env.AZ_RESOURCE_GROUP }}
+        echo "Listing active revisions for ${{ env.AZ_CONTAINER_APP_NAME }}..."
+        ACTIVE_REVISION=$(az containerapp revision list --name ${{ env.AZ_CONTAINER_APP_NAME }} --resource-group ${{ env.AZ_RESOURCE_GROUP }} \
+          | jq -r '.[] | select(.properties.active == true) | .name')
+        
+        echo "Active revision: $ACTIVE_REVISION"
+        
+        if [ -n "$ACTIVE_REVISION" ]; then
+          echo "Restarting active revision $ACTIVE_REVISION..."
+          az containerapp revision restart --name ${{ env.AZ_CONTAINER_APP_NAME }} --resource-group ${{ env.AZ_RESOURCE_GROUP }} --revision $ACTIVE_REVISION
+          echo "$ACTIVE_REVISION restarted successfully."
+        else
+          echo "No active revision found to restart."
+        fi
+  
